@@ -1,0 +1,25 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Cursor AI Operating Rules
+
+## 1. Instruction File Review
+- Always read and follow the latest `instructions.md` before starting any task.
+- If `instructions.md` has versioning, follow the most recent version.
+- Summarize the relevant instructions if needed before execution.
+
+## 2. Task Execution Workflow
+- Parse the user request and clarify unclear requirements.
+- Determine if the request affects:
+  - Code (logic, structure, dependencies)
+  - Documentation (README, .md files)
+  - Configuration (env, settings, etc.)
+- Apply changes incrementally and safely.
+- Follow naming conventions, file structure, and style as described in `instructions.md`.
+
+## 3. Logging Changes in `changelog.md`
+- Always append a new entry for each task that results in a change.
+- Follow this format in `changelog.md`:
+
