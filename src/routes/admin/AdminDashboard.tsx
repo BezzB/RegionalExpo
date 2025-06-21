@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { supabase } from '../../App'
+import supabase from '../../lib/supabase'
 import { useNavigate } from 'react-router-dom'
 import { Loader2 } from 'lucide-react'
 
@@ -114,3 +114,4 @@ export default function AdminDashboard() {
     </motion.div>
   )
 }
+

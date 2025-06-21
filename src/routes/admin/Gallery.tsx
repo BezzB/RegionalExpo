@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { supabase } from '../../App'
+import supabase from '../../lib/supabase'
 import { useGallery, GalleryItem } from '../../context/GalleryContext'
 import { 
   Upload, 

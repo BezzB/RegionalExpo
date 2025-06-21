@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { supabase } from '../../App'
+import supabase from '../../lib/supabase'
 import { 
   Bell, Loader2, AlertCircle, CheckSquare, Trash2, 
   Mail, MessageSquare, Calendar, Star, Settings

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { supabase } from '../../App'
+import supabase from '../../lib/supabase'
 import { 
   Plus, Trash2, Edit2, Loader2, Globe, Mail, Phone, Building2, MapPin,
   Search, Filter, Download, CheckSquare, Square, AlertCircle, X

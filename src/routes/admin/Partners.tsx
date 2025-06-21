@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { supabase } from '../../App'
+import supabase from '../../lib/supabase'
 import { Plus, Trash2, Edit2, Loader2, Globe, Mail, Phone, Building2 } from 'lucide-react'
 
 interface Partner {

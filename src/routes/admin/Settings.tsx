@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { supabase } from '../../App'
+import supabase from '../../lib/supabase'
 import { 
   Save, Loader2, AlertCircle, CheckSquare, Globe, Mail, 
   Phone, MapPin, Calendar, Clock, Image, Link, Settings as SettingsIcon
