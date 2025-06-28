@@ -1,4 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { QueryClientProvider } from '@tanstack/react-query'
+import { queryClient } from './lib/react-query'
 import Layout from './components/Layout'
 import Home from './routes/Home'
 import About from './routes/About'
@@ -30,6 +32,7 @@ import AdminNotifications from './routes/admin/Notifications'
 import AdminSpeakers from './routes/admin/Speakers'
 import AdminProfile from './routes/admin/Profile'
 import AdminMarathon from './routes/admin/Marathon'
+import ScrollToTop from './components/ScrollToTop'
 
 // Enable React Router v7 features
 const routerOptions = {
@@ -41,45 +44,48 @@ const routerOptions = {
 
 export default function App() {
   return (
-    <Router {...routerOptions}>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="about" element={<About />} />
-          <Route path="contact" element={<Contact />} />
-          <Route path="events" element={<Events />} />
-          <Route path="programs" element={<Programs />} />
-          <Route path="programs/marathon" element={<FirstLadyMarathon />} />
-          <Route path="programs/gala" element={<GalaBreakfast />} />
-          <Route path="sponsors" element={<Sponsors />} />
-          <Route path="sponsorship" element={<Sponsorship />} />
-          
-          {/* Registration Routes */}
-          <Route path="register" element={<RegistrationTypeSelection />} />
-          <Route path="register/sponsor" element={<SponsorRegistration />} />
-          <Route path="register/delegate" element={<DelegateRegistration />} />
-          <Route path="register/marathon" element={<MarathonRegistration />} />
-          <Route path="registration-success" element={<RegistrationSuccess />} />
-        </Route>
+    <QueryClientProvider client={queryClient}>
+      <Router {...routerOptions}>
+        <ScrollToTop />
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="about" element={<About />} />
+            <Route path="contact" element={<Contact />} />
+            <Route path="events" element={<Events />} />
+            <Route path="programs" element={<Programs />} />
+            <Route path="programs/marathon" element={<FirstLadyMarathon />} />
+            <Route path="programs/gala" element={<GalaBreakfast />} />
+            <Route path="sponsors" element={<Sponsors />} />
+            <Route path="sponsorship" element={<Sponsorship />} />
+            
+            {/* Registration Routes */}
+            <Route path="register" element={<RegistrationTypeSelection />} />
+            <Route path="register/sponsor" element={<SponsorRegistration />} />
+            <Route path="register/delegate" element={<DelegateRegistration />} />
+            <Route path="register/marathon" element={<MarathonRegistration />} />
+            <Route path="registration-success" element={<RegistrationSuccess />} />
+          </Route>
 
-        {/* Admin Routes */}
-        <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<AdminDashboard />} />
-          <Route path="events" element={<AdminEvents />} />
-          <Route path="sponsors" element={<AdminSponsors />} />
-          <Route path="partners" element={<AdminPartners />} />
-          <Route path="exhibitors" element={<AdminExhibitors />} />
-          <Route path="attendees" element={<AdminAttendees />} />
-          <Route path="marathon" element={<AdminMarathon />} />
-          <Route path="payments" element={<AdminPayments />} />
-          <Route path="settings" element={<AdminSettings />} />
-          <Route path="notifications" element={<AdminNotifications />} />
-          <Route path="speakers" element={<AdminSpeakers />} />
-          <Route path="profile" element={<AdminProfile />} />
-        </Route>
-      </Routes>
-    </Router>
+          {/* Admin Routes */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="events" element={<AdminEvents />} />
+            <Route path="sponsors" element={<AdminSponsors />} />
+            <Route path="partners" element={<AdminPartners />} />
+            <Route path="exhibitors" element={<AdminExhibitors />} />
+            <Route path="attendees" element={<AdminAttendees />} />
+            <Route path="marathon" element={<AdminMarathon />} />
+            <Route path="payments" element={<AdminPayments />} />
+            <Route path="settings" element={<AdminSettings />} />
+            <Route path="notifications" element={<AdminNotifications />} />
+            <Route path="speakers" element={<AdminSpeakers />} />
+            <Route path="profile" element={<AdminProfile />} />
+          </Route>
+        </Routes>
+      </Router>
+    </QueryClientProvider>
   )
 } 
