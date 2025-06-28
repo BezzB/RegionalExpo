@@ -145,8 +145,15 @@ export default function Sponsorship() {
   }
 
   const handlePaymentSuccess = () => {
-    toast.success('Thank you for your sponsorship! Our team will contact you shortly.')
-    setSelectedPackage(null)
+    toast.success('Thank you for your sponsorship! Our team will be in touch shortly.', {
+      duration: 5000,
+      position: 'top-center',
+      icon: '🎉',
+    })
+    // Delay clearing the selected package to allow the success message to be seen
+    setTimeout(() => {
+      setSelectedPackage(null)
+    }, 1000)
   }
 
   return (
@@ -372,7 +379,7 @@ export default function Sponsorship() {
                           )}
                         </Button>
                         <div className="flex items-center justify-center gap-2">
-                          <WhatsAppButton packageName={pkg.name} price={pkg.price} />
+                          <WhatsAppButton packageName={pkg.name} price={String(pkg.price)} />
                           <Button
                             variant="outline"
                             className="flex-1"

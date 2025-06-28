@@ -1,35 +1,57 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import supabase from '../../lib/supabase'
-import { Loader2, Download, Search, Filter, RefreshCw } from 'lucide-react'
+import { Loader2, Download, Search, Filter, RefreshCw, CheckCircle, XCircle } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { useDebounce } from '../../hooks/useDebounce'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Select } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog'
 import { format } from 'date-fns'
 
 interface Payment {
   id: string
-  customer: {
-    full_name: string
-    email: string
-    company: string
-  }
+  customer_name: string
+  customer_email: string
+  customer_phone: string
+  customer_organization: string
+  customer_position: string
   package: {
+    id: string
     name: string
     price: number
     currency: string
+    description: string
   }
-  status: string
-  amount_paid: number
+  amount: number
+  currency: string
   payment_method: string
-  payment_reference: string
-  mpesa_phone: string
-  transaction_id: string
+  mpesa_phone: string | null
+  status: string
+  payment_provider: string
+  payment_metadata: {
+    package_name: string
+    package_description: string
+    package_benefits: string[]
+  }
   created_at: string
+  updated_at: string
 }
 
 interface FilterOptions {
@@ -41,6 +63,7 @@ interface FilterOptions {
 
 const PAYMENT_STATUS = [
   { value: 'pending', label: 'Pending', color: 'yellow' },
+  { value: 'processing', label: 'Processing', color: 'blue' },
   { value: 'completed', label: 'Completed', color: 'green' },
   { value: 'failed', label: 'Failed', color: 'red' },
   { value: 'refunded', label: 'Refunded', color: 'purple' }
@@ -52,21 +75,30 @@ export default function AdminPayments() {
   const [error, setError] = useState<string | null>(null)
   const [filters, setFilters] = useState<FilterOptions>({
     search: '',
-    status: '',
-    package: '',
+    status: 'all',
+    package: 'all',
     dateRange: ''
   })
   const debouncedSearch = useDebounce(filters.search, 300)
+  const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null)
+  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false)
+  const [updatingStatus, setUpdatingStatus] = useState(false)
+  const [newStatus, setNewStatus] = useState('')
 
   const fetchPayments = async () => {
     try {
       setLoading(true)
       const { data, error } = await supabase
-        .from('purchases')
+        .from('payments')
         .select(`
           *,
-          customer:customers(full_name, email, company),
-          package:payment_packages(name, price, currency)
+          package:payment_packages(
+            id,
+            name,
+            price,
+            currency,
+            description
+          )
         `)
         .order('created_at', { ascending: false })
 
@@ -75,6 +107,7 @@ export default function AdminPayments() {
     } catch (err) {
       console.error('Error fetching payments:', err)
       setError(err instanceof Error ? err.message : 'Failed to load payments')
+      toast.error('Failed to load payments')
     } finally {
       setLoading(false)
     }
@@ -83,17 +116,33 @@ export default function AdminPayments() {
   const handleExport = () => {
     try {
       const csvData = [
-        ['Date', 'Customer', 'Email', 'Company', 'Package', 'Amount', 'Status', 'Reference', 'Transaction ID'],
+        [
+          'Date',
+          'Customer Name',
+          'Email',
+          'Phone',
+          'Organization',
+          'Position',
+          'Package',
+          'Amount',
+          'Payment Method',
+          'Status',
+          'Provider',
+          'M-Pesa Phone'
+        ],
         ...filteredPayments.map(payment => [
           format(new Date(payment.created_at), 'yyyy-MM-dd HH:mm:ss'),
-          payment.customer.full_name,
-          payment.customer.email,
-          payment.customer.company,
+          payment.customer_name,
+          payment.customer_email,
+          payment.customer_phone,
+          payment.customer_organization,
+          payment.customer_position,
           payment.package.name,
-          `${payment.package.currency} ${payment.amount_paid}`,
+          `${payment.currency} ${payment.amount}`,
+          payment.payment_method,
           payment.status,
-          payment.payment_reference,
-          payment.transaction_id
+          payment.payment_provider,
+          payment.mpesa_phone || ''
         ])
       ]
       .map(row => row.join(','))
@@ -114,19 +163,50 @@ export default function AdminPayments() {
     }
   }
 
+  const handleStatusUpdate = async (paymentId: string, newStatus: string) => {
+    try {
+      setUpdatingStatus(true)
+      
+      const { error } = await supabase
+        .from('payments')
+        .update({ 
+          status: newStatus,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', paymentId)
+
+      if (error) throw error
+
+      // Update local state
+      setPayments(payments.map(payment => 
+        payment.id === paymentId 
+          ? { ...payment, status: newStatus, updated_at: new Date().toISOString() }
+          : payment
+      ))
+
+      toast.success('Payment status updated successfully')
+      setIsUpdateDialogOpen(false)
+      setSelectedPayment(null)
+      setNewStatus('')
+    } catch (err) {
+      console.error('Error updating payment status:', err)
+      toast.error('Failed to update payment status')
+    } finally {
+      setUpdatingStatus(false)
+    }
+  }
+
   const filteredPayments = payments.filter(payment => {
     const searchTerm = debouncedSearch.toLowerCase()
     const matchesSearch = 
-      payment.customer.full_name.toLowerCase().includes(searchTerm) ||
-      payment.customer.email.toLowerCase().includes(searchTerm) ||
-      payment.customer.company?.toLowerCase().includes(searchTerm) ||
-      payment.payment_reference?.toLowerCase().includes(searchTerm) ||
-      payment.transaction_id?.toLowerCase().includes(searchTerm)
+      payment.customer_name.toLowerCase().includes(searchTerm) ||
+      payment.customer_email.toLowerCase().includes(searchTerm) ||
+      payment.customer_organization.toLowerCase().includes(searchTerm) ||
+      payment.customer_phone.toLowerCase().includes(searchTerm) ||
+      payment.mpesa_phone?.toLowerCase().includes(searchTerm)
     
-    const matchesStatus = !filters.status || payment.status === filters.status
-    const matchesPackage = !filters.package || (payment.package?.name === filters.package)
-    
-    // Date range filtering can be added here if needed
+    const matchesStatus = filters.status === 'all' || payment.status === filters.status
+    const matchesPackage = filters.package === 'all' || (payment.package?.name === filters.package)
     
     return matchesSearch && matchesStatus && matchesPackage
   })
@@ -186,104 +266,151 @@ export default function AdminPayments() {
               />
             </div>
             <div>
-              <Select
-                value={filters.status}
-                onValueChange={value => setFilters(prev => ({ ...prev, status: value }))}
+              <Select 
+                value={filters.status} 
+                onValueChange={(value) => setFilters(prev => ({ ...prev, status: value }))}
               >
-                <option value="" disabled>Filter by status</option>
-                {PAYMENT_STATUS.map(status => (
-                  <option key={status.value} value={status.value}>
-                    {status.label}
-                  </option>
-                ))}
+                <SelectTrigger>
+                  <SelectValue placeholder="Filter by status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  {PAYMENT_STATUS.map(status => (
+                    <SelectItem key={status.value} value={status.value}>
+                      {status.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
             <div>
-              <Select
-                value={filters.package}
-                onValueChange={value => setFilters(prev => ({ ...prev, package: value }))}
+              <Select 
+                value={filters.package} 
+                onValueChange={(value) => setFilters(prev => ({ ...prev, package: value }))}
               >
-                <option value="" disabled>Filter by package</option>
-                {Array.from(new Set(payments.filter(p => p.package).map(p => p.package.name))).map(name => (
-                  <option key={name} value={name}>
-                    {name}
-                  </option>
-                ))}
+                <SelectTrigger>
+                  <SelectValue placeholder="Filter by package" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Packages</SelectItem>
+                  {Array.from(new Set(payments
+                    .filter(p => p.package?.name)
+                    .map(p => p.package.name)))
+                    .map(name => (
+                      <SelectItem key={name} value={name}>
+                        {name}
+                      </SelectItem>
+                    ))
+                  }
+                </SelectContent>
               </Select>
             </div>
           </div>
         </Card>
 
-        {/* Payments List */}
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        {/* Table */}
+        <div className="bg-white shadow-sm rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Date
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Customer
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Customer Details
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Package
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Amount
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Reference
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Payment Details
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredPayments.map(payment => (
-                  <motion.tr
+                {filteredPayments.map((payment, index) => (
+                  <motion.tr 
                     key={payment.id}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="hover:bg-gray-50"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
                   >
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {format(new Date(payment.created_at), 'MMM d, yyyy HH:mm')}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
-                        {payment.customer.full_name}
+                        {payment.customer_name}
                       </div>
                       <div className="text-sm text-gray-500">
-                        {payment.customer.email}
+                        {payment.customer_email}
                       </div>
-                      {payment.customer.company && (
-                        <div className="text-sm text-gray-500">
-                          {payment.customer.company}
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {payment.package?.name || 'N/A'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {payment.package ? `${payment.package.currency} ${payment.amount_paid}` : `${payment.amount_paid}`}
+                      <div className="text-sm text-gray-500">
+                        {payment.customer_organization}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {payment.customer_phone}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <Badge
-                        className={
-                          payment.status === 'completed' ? 'bg-green-100 text-green-800' :
-                          payment.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                          payment.status === 'failed' ? 'bg-red-100 text-red-800' :
-                          'bg-purple-100 text-purple-800'
-                        }
+                      <div className="text-sm font-medium text-gray-900">
+                        {payment.package.name}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {payment.payment_metadata.package_description}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {payment.currency} {payment.amount.toLocaleString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <Badge 
+                        className={`
+                          ${payment.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : ''}
+                          ${payment.status === 'processing' ? 'bg-blue-100 text-blue-800' : ''}
+                          ${payment.status === 'completed' ? 'bg-green-100 text-green-800' : ''}
+                          ${payment.status === 'failed' ? 'bg-red-100 text-red-800' : ''}
+                          ${payment.status === 'refunded' ? 'bg-purple-100 text-purple-800' : ''}
+                        `}
                       >
                         {payment.status.charAt(0).toUpperCase() + payment.status.slice(1)}
                       </Badge>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {payment.payment_reference || payment.transaction_id || '-'}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">
+                        {payment.payment_method.toUpperCase()}
+                      </div>
+                      {payment.mpesa_phone && (
+                        <div className="text-sm text-gray-500">
+                          M-Pesa: {payment.mpesa_phone}
+                        </div>
+                      )}
+                      <div className="text-sm text-gray-500">
+                        Provider: {payment.payment_provider}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <Button
+                        onClick={() => {
+                          setSelectedPayment(payment)
+                          setNewStatus(payment.status)
+                          setIsUpdateDialogOpen(true)
+                        }}
+                        variant="outline"
+                        className="text-sm"
+                      >
+                        Update Status
+                      </Button>
                     </td>
                   </motion.tr>
                 ))}
@@ -291,6 +418,110 @@ export default function AdminPayments() {
             </table>
           </div>
         </div>
+
+        {/* Status Update Dialog */}
+        <Dialog open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Update Payment Status</DialogTitle>
+              <DialogDescription>
+                Update the status for payment from {selectedPayment?.customer_name}
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="py-4">
+              <div className="space-y-4">
+                <div>
+                  <h4 className="text-sm font-medium mb-2">Current Status</h4>
+                  <Badge 
+                    className={`
+                      ${selectedPayment?.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : ''}
+                      ${selectedPayment?.status === 'processing' ? 'bg-blue-100 text-blue-800' : ''}
+                      ${selectedPayment?.status === 'completed' ? 'bg-green-100 text-green-800' : ''}
+                      ${selectedPayment?.status === 'failed' ? 'bg-red-100 text-red-800' : ''}
+                      ${selectedPayment?.status === 'refunded' ? 'bg-purple-100 text-purple-800' : ''}
+                    `}
+                  >
+                    {selectedPayment?.status ? selectedPayment.status.charAt(0).toUpperCase() + selectedPayment.status.slice(1) : ''}
+                  </Badge>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-medium mb-2">New Status</h4>
+                  <Select value={newStatus} onValueChange={setNewStatus}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select new status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PAYMENT_STATUS.map(status => (
+                        <SelectItem key={status.value} value={status.value}>
+                          {status.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h4 className="text-sm font-medium mb-2">Payment Details</h4>
+                  <div className="text-sm text-gray-600 space-y-1">
+                    <p>Amount: {selectedPayment?.currency} {selectedPayment?.amount.toLocaleString()}</p>
+                    <p>Package: {selectedPayment?.package.name}</p>
+                    <p>Payment Method: {selectedPayment?.payment_method.toUpperCase()}</p>
+                    {selectedPayment?.mpesa_phone && (
+                      <p>M-Pesa Phone: {selectedPayment?.mpesa_phone}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsUpdateDialogOpen(false)
+                  setSelectedPayment(null)
+                  setNewStatus('')
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => selectedPayment && handleStatusUpdate(selectedPayment.id, newStatus)}
+                disabled={!newStatus || newStatus === selectedPayment?.status || updatingStatus}
+                className={`${
+                  newStatus === 'completed' ? 'bg-green-600 hover:bg-green-700' :
+                  newStatus === 'failed' ? 'bg-red-600 hover:bg-red-700' :
+                  'bg-blue-600 hover:bg-blue-700'
+                } text-white`}
+              >
+                {updatingStatus ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Updating...
+                  </>
+                ) : (
+                  'Update Status'
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* No results */}
+        {filteredPayments.length === 0 && !loading && (
+          <div className="text-center py-12">
+            <p className="text-gray-500">No payments found</p>
+          </div>
+        )}
+
+        {/* Error state */}
+        {error && (
+          <div className="text-center py-12">
+            <p className="text-red-500">{error}</p>
+          </div>
+        )}
       </div>
     </div>
   )

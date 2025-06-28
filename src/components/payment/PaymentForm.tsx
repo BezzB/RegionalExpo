@@ -130,21 +130,25 @@ export function PaymentForm({ selectedPackage, onClose, onSuccess }: PaymentForm
         throw new Error('No payment record was created. Please try again.')
       }
 
-      // For demo purposes, we'll simulate a successful payment
+      // Show success state immediately
+      setPaymentStatus('success')
+      
+      // Show toast notifications
+      toast.success('Payment initiated successfully! 🎉', {
+        duration: 5000,
+        position: 'top-center',
+        icon: '✅',
+      })
+      toast.success(`We'll send payment instructions to ${formData.email}`, {
+        duration: 5000,
+        position: 'top-center',
+        icon: '📧',
+      })
+
+      // Delay the dialog close to allow user to see the success message
       setTimeout(() => {
-        setPaymentStatus('success')
-        toast.success('Payment initiated successfully! 🎉', {
-          duration: 5000,
-          position: 'top-center',
-          icon: '✅',
-        })
-        toast.success(`We'll send payment instructions to ${formData.email}`, {
-          duration: 5000,
-          position: 'top-center',
-          icon: '📧',
-        })
         onSuccess()
-      }, 2000)
+      }, 5000)
 
     } catch (error) {
       console.error('Payment processing error:', error)
