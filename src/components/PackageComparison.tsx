@@ -3,6 +3,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Check, X } from 'lucide-react'
+import { formatCurrency } from '@/lib/utils'
 
 interface Package {
   name: string
@@ -84,7 +85,7 @@ export function PackageComparison({ packages }: PackageComparisonProps) {
                           {pkg.name}
                         </span>
                         <span className="text-sm text-muted-foreground">
-                          {pkg.currency} {pkg.price}
+                          {formatCurrency(pkg.price, pkg.currency)}
                         </span>
                         {pkg.featured && (
                           <Badge variant="secondary" className="bg-primary/10 text-primary border-none">

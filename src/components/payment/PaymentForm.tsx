@@ -15,6 +15,7 @@ import {
 import { AlertCircle, CheckCircle2, CreditCard } from 'lucide-react'
 import supabase from '@/lib/supabase'
 import { validateEmail, validatePhone } from '@/utils/validation'
+import { formatCurrency } from '@/lib/utils'
 import { toast } from 'react-hot-toast'
 
 interface PaymentFormProps {
@@ -220,9 +221,7 @@ export function PaymentForm({ selectedPackage, onClose, onSuccess }: PaymentForm
                     <p className="text-sm text-gray-600">{selectedPackage.description}</p>
                   </div>
                   <Badge variant="secondary" className="text-lg">
-                    {selectedPackage.currency} {typeof selectedPackage.price === 'number' 
-                      ? selectedPackage.price.toLocaleString()
-                      : selectedPackage.price}
+                    {formatCurrency(selectedPackage.price, selectedPackage.currency)}
                   </Badge>
                 </div>
               </Card>

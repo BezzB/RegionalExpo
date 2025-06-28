@@ -24,6 +24,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import { format } from 'date-fns'
+import { formatCurrency } from '@/lib/utils'
 
 interface Payment {
   id: string
@@ -370,7 +371,7 @@ export default function AdminPayments() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {payment.currency} {payment.amount.toLocaleString()}
+                      {formatCurrency(payment.amount, payment.currency)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <Badge 
@@ -464,7 +465,7 @@ export default function AdminPayments() {
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <h4 className="text-sm font-medium mb-2">Payment Details</h4>
                   <div className="text-sm text-gray-600 space-y-1">
-                    <p>Amount: {selectedPayment?.currency} {selectedPayment?.amount.toLocaleString()}</p>
+                    <p>Amount: {formatCurrency(selectedPayment?.amount || 0, selectedPayment?.currency || '')}</p>
                     <p>Package: {selectedPayment?.package.name}</p>
                     <p>Payment Method: {selectedPayment?.payment_method.toUpperCase()}</p>
                     {selectedPayment?.mpesa_phone && (

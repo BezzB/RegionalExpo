@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { formatCurrency } from '@/lib/utils'
 import { 
   Check, 
   Star, 
@@ -338,10 +339,10 @@ export default function Sponsorship() {
 
                       <div className="mb-6">
                         <div className="text-3xl font-bold mb-2 text-gray-900">
-                          {pkg.currency} {pkg.price}
+                          {formatCurrency(pkg.price, pkg.currency)}
                           {pkg.reservationFee && (
                             <span className="text-sm font-normal text-gray-600 block">
-                              + {pkg.currency} {pkg.reservationFee} reservation fee
+                              + {formatCurrency(pkg.reservationFee, pkg.currency)}
                             </span>
                           )}
                         </div>
