@@ -324,7 +324,7 @@ export default function Sponsorship() {
                         </div>
                       </div>
                     )}
-                    <div className="p-6">
+                    <div className="p-6 flex flex-col h-full">
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2">
                           {styles.icon}
@@ -349,7 +349,7 @@ export default function Sponsorship() {
                         <p className="text-gray-600 leading-relaxed">{pkg.description}</p>
                       </div>
 
-                      <div className="space-y-4 mb-6">
+                      <div className="space-y-4 flex-grow">
                         {pkg.benefits.map((benefit, idx) => (
                           <div key={idx} className="flex items-start gap-3">
                             <Check className={`w-5 h-5 ${styles.text} flex-shrink-0 mt-1`} />
@@ -358,7 +358,7 @@ export default function Sponsorship() {
                         ))}
                       </div>
 
-                      <div className="space-y-3 mt-auto">
+                      <div className="space-y-3 pt-6">
                         <Button 
                           className={`w-full bg-gradient-to-r ${styles.gradient} text-white hover:opacity-90 
                             transition-all duration-300 shadow-lg hover:shadow-xl font-semibold

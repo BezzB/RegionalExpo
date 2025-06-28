@@ -24,40 +24,30 @@ const getPackageColors = (packageName: string) => {
   switch (packageName) {
     case "Platinum Package":
       return {
-        from: '[#C0A960]',
-        to: '[#8B7B3B]',
         border: '[#C0A960]',
         text: '[#8B7B3B]',
         hover: '[#8B7B3B]'
       };
     case "Gold Package":
       return {
-        from: 'amber-400',
-        to: 'amber-600',
         border: 'amber-400',
         text: 'amber-600',
         hover: 'amber-700'
       };
     case "Silver Package":
       return {
-        from: 'slate-300',
-        to: 'slate-500',
         border: 'slate-400',
         text: 'slate-600',
         hover: 'slate-700'
       };
     case "Bronze Package":
       return {
-        from: 'orange-300',
-        to: 'orange-500',
         border: 'orange-400',
         text: 'orange-600',
         hover: 'orange-700'
       };
     default:
       return {
-        from: '[#25D366]',
-        to: '[#128C7E]',
         border: '[#25D366]',
         text: '[#25D366]',
         hover: '[#128C7E]'
@@ -102,7 +92,7 @@ export function WhatsAppButton({ packageName, price }: WhatsAppButtonProps) {
             className={`w-full group relative overflow-hidden border-${colors.border}/30 text-${colors.text} hover:text-${colors.hover} transition-colors duration-300`}
           >
             <span className="relative z-10">How it works</span>
-            <span className={`absolute inset-0 bg-${colors.from}/10 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300`}></span>
+            <span className={`absolute inset-0 bg-${colors.border}/10 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300`}></span>
           </Button>
         </DialogTrigger>
         <DialogContent>
@@ -149,7 +139,7 @@ export function WhatsAppButton({ packageName, price }: WhatsAppButtonProps) {
         <Tooltip>
           <TooltipTrigger asChild>
             <Button 
-              className={`w-full bg-gradient-to-r from-${colors.from} to-${colors.to} hover:from-${colors.to} hover:to-${colors.hover} text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2`}
+              className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2"
               onClick={handleClick}
             >
               <div className="relative">
