@@ -1,21 +1,22 @@
 import { ReactNode } from 'react'
+import { Outlet } from 'react-router-dom'
 import AdminSidebar from './AdminSidebar'
 import AdminHeader from './AdminHeader'
 
 interface AdminLayoutProps {
-  children: ReactNode
+  children?: ReactNode
 }
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-100">
+      <AdminHeader />
       <AdminSidebar />
-      <div className="flex-1 ml-64">
-        <AdminHeader />
-        <main className="p-6">
-          {children}
-        </main>
-      </div>
+      <main className="pl-64 pt-16">
+        <div className="container mx-auto px-6 py-8">
+          {children || <Outlet />}
+        </div>
+      </main>
     </div>
   )
 } 

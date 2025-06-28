@@ -1,168 +1,75 @@
-import { Suspense, lazy } from 'react'
-import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { GalleryProvider } from './context/GalleryContext'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
-import supabase from './lib/supabase'
+import Home from './routes/Home'
+import About from './routes/About'
+import Contact from './routes/Contact'
+import Events from './routes/Events'
+import Programs from './routes/Programs'
+import FirstLadyMarathon from './routes/FirstLadyMarathon'
+import GalaBreakfast from './routes/GalaBreakfast'
+import Sponsors from './routes/Sponsors'
+import Sponsorship from './routes/Sponsorship'
+import RegistrationTypeSelection from './routes/RegistrationTypeSelection'
+import SponsorRegistration from './routes/Register'
+import DelegateRegistration from './routes/DelegateRegistration'
+import MarathonRegistration from './routes/MarathonRegistration'
+import RegistrationSuccess from './routes/RegistrationSuccess'
+
+// Admin routes
 import AdminLayout from './components/admin/AdminLayout'
+import AdminDashboard from './routes/admin/AdminDashboard'
+import AdminLogin from './routes/admin/Login'
+import AdminEvents from './routes/admin/Events'
+import AdminSponsors from './routes/admin/Sponsors'
+import AdminPartners from './routes/admin/Partners'
+import AdminExhibitors from './routes/admin/Exhibitors'
+import AdminAttendees from './routes/admin/Attendees'
+import AdminPayments from './routes/admin/Payments'
+import AdminSettings from './routes/admin/Settings'
+import AdminNotifications from './routes/admin/Notifications'
+import AdminSpeakers from './routes/admin/Speakers'
+import AdminProfile from './routes/admin/Profile'
 
-// Create a client
-const queryClient = new QueryClient()
-
-// Lazy load pages
-const Home = lazy(() => import('./routes/Home'))
-const About = lazy(() => import('./routes/About'))
-const Contact = lazy(() => import('./routes/Contact'))
-const Gallery = lazy(() => import('./routes/Gallery'))
-const Programs = lazy(() => import('./routes/Programs'))
-const Sponsorship = lazy(() => import('./routes/Sponsorship'))
-const Sponsors = lazy(() => import('./routes/Sponsors'))
-const Events = lazy(() => import('./routes/Events'))
-const FirstLadyMarathon = lazy(() => import('./routes/FirstLadyMarathon'))
-const GalaBreakfast = lazy(() => import('./routes/GalaBreakfast'))
-const AdminDashboard = lazy(() => import('./routes/admin/AdminDashboard'))
-const AdminLogin = lazy(() => import('./routes/admin/Login'))
-const AdminGallery = lazy(() => import('./routes/admin/Gallery'))
-const AdminEvents = lazy(() => import('./routes/admin/Events'))
-const AdminSpeakers = lazy(() => import('./routes/admin/Speakers'))
-const AdminSponsors = lazy(() => import('./routes/admin/Sponsors'))
-const AdminPartners = lazy(() => import('./routes/admin/Partners'))
-const AdminExhibitors = lazy(() => import('./routes/admin/Exhibitors'))
-const AdminAttendees = lazy(() => import('./routes/admin/Attendees'))
-const AdminPayments = lazy(() => import('./routes/admin/Payments'))
-const AdminSettings = lazy(() => import('./routes/admin/Settings'))
-const AdminNotifications = lazy(() => import('./routes/admin/Notifications'))
-
-// Create router
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Layout />,
-    children: [
-      {
-        index: true,
-        element: <Home />
-      },
-      {
-        path: "about",
-        element: <About />
-      },
-      {
-        path: "contact",
-        element: <Contact />
-      },
-      {
-        path: "gallery",
-        element: <Gallery />
-      },
-      {
-        path: "programs",
-        element: <Programs />
-      },
-      {
-        path: "program",
-        element: <Events />
-      },
-      {
-        path: "sponsorship",
-        element: <Sponsorship />
-      },
-      {
-        path: "sponsors",
-        element: <Sponsors />
-      },
-      {
-        path: "events",
-        element: <Events />
-      },
-      {
-        path: "first-lady-marathon",
-        element: <FirstLadyMarathon />
-      },
-      {
-        path: "breakfast",
-        element: <GalaBreakfast />
-      },
-      {
-        path: "programs/gala",
-        element: <GalaBreakfast />
-      },
-      {
-        path: "programs/marathon",
-        element: <FirstLadyMarathon />
-      }
-    ]
-  },
-  {
-    path: "/admin/login",
-    element: <AdminLogin />
-  },
-  {
-    path: "/admin",
-    element: (
-      <GalleryProvider>
-        <AdminLayout>
-          <Outlet />
-        </AdminLayout>
-      </GalleryProvider>
-    ),
-    children: [
-      {
-        index: true,
-        element: <AdminDashboard />
-      },
-      {
-        path: "gallery",
-        element: <AdminGallery />
-      },
-      {
-        path: "events",
-        element: <AdminEvents />
-      },
-      {
-        path: "speakers",
-        element: <AdminSpeakers />
-      },
-      {
-        path: "sponsors",
-        element: <AdminSponsors />
-      },
-      {
-        path: "partners",
-        element: <AdminPartners />
-      },
-      {
-        path: "exhibitors",
-        element: <AdminExhibitors />
-      },
-      {
-        path: "attendees",
-        element: <AdminAttendees />
-      },
-      {
-        path: "payments",
-        element: <AdminPayments />
-      },
-      {
-        path: "settings",
-        element: <AdminSettings />
-      },
-      {
-        path: "notifications",
-        element: <AdminNotifications />
-      }
-    ]
-  }
-])
-
-function App() {
+export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <Suspense fallback={<div>Loading...</div>}>
-        <RouterProvider router={router} future={{ v7_startTransition: true }} />
-      </Suspense>
-    </QueryClientProvider>
-  )
-}
+    <Router>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path="about" element={<About />} />
+          <Route path="contact" element={<Contact />} />
+          <Route path="events" element={<Events />} />
+          <Route path="programs" element={<Programs />} />
+          <Route path="programs/marathon" element={<FirstLadyMarathon />} />
+          <Route path="programs/gala" element={<GalaBreakfast />} />
+          <Route path="sponsors" element={<Sponsors />} />
+          <Route path="sponsorship" element={<Sponsorship />} />
+          
+          {/* Registration Routes */}
+          <Route path="register" element={<RegistrationTypeSelection />} />
+          <Route path="register/sponsor" element={<SponsorRegistration />} />
+          <Route path="register/delegate" element={<DelegateRegistration />} />
+          <Route path="register/marathon" element={<MarathonRegistration />} />
+          <Route path="registration-success" element={<RegistrationSuccess />} />
+        </Route>
 
-export default App 
+        {/* Admin Routes */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="events" element={<AdminEvents />} />
+          <Route path="sponsors" element={<AdminSponsors />} />
+          <Route path="partners" element={<AdminPartners />} />
+          <Route path="exhibitors" element={<AdminExhibitors />} />
+          <Route path="attendees" element={<AdminAttendees />} />
+          <Route path="payments" element={<AdminPayments />} />
+          <Route path="settings" element={<AdminSettings />} />
+          <Route path="notifications" element={<AdminNotifications />} />
+          <Route path="speakers" element={<AdminSpeakers />} />
+          <Route path="profile" element={<AdminProfile />} />
+        </Route>
+      </Routes>
+    </Router>
+  )
+} 

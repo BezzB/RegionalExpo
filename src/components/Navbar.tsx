@@ -145,18 +145,18 @@ export default function Navbar() {
               </AnimatePresence>
             </div>
 
-            {/* Get Involved Button */}
+            {/* Register Button */}
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
               <Link
-                to="/sponsorship"
+                to="/register"
                 className="bg-gradient-to-r from-green-800 to-green-600 text-white px-6 py-2.5 rounded-full
                   hover:shadow-lg hover:shadow-green-500/20 transition-all duration-300
                   font-medium text-sm"
               >
-                Get Involved
+                Register
               </Link>
             </motion.div>
           </div>
@@ -245,19 +245,19 @@ export default function Navbar() {
                   </div>
                 </div>
 
-                {/* Mobile Get Involved Button */}
+                {/* Mobile Register Button */}
                 <motion.div
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className="px-4 pt-2"
                 >
                   <Link
-                    to="/sponsorship"
+                    to="/register"
                     className="block bg-gradient-to-r from-green-800 to-green-600 text-white px-6 py-3
                       rounded-xl text-center font-medium hover:shadow-lg transition-all duration-300"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Get Involved
+                    Register
                   </Link>
                 </motion.div>
               </div>

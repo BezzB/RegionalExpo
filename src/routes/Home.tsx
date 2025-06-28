@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { motion, useScroll } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { useRef } from 'react'
@@ -19,7 +20,6 @@ const footerLinks = {
   'Resources': [
     { name: 'Press Kit', href: '/press' },
     { name: 'FAQs', href: '/faqs' },
-    { name: 'Gallery', href: '/gallery' },
     { name: 'Blog', href: '/blog' }
   ],
   'Contact': [
@@ -521,66 +521,58 @@ export default function Home() {
       </section>
 
       {/* Key Features */}
-      <section className="py-24 bg-white relative">
-        {/* Decorative background elements */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(34,197,94,0.05)_0%,rgba(255,255,255,0)_50%)]" />
-        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.015]" />
-        <div className="absolute -top-px left-0 right-0 h-px bg-gradient-to-r from-transparent via-green-500/20 to-transparent" />
-        
-        <motion.div 
-          className="container mx-auto px-4 relative"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-        >
-          <motion.h2 
-            className="text-4xl md:text-5xl font-bold mb-16 text-center bg-gradient-to-r 
-              from-green-800 to-green-600 bg-clip-text text-transparent"
-            variants={itemVariants}
+      <section className="py-24 bg-gradient-to-b from-black to-gray-900">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-7xl mx-auto"
           >
-            Why Attend?
-          </motion.h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {keyFeatures.map((feature, index) => (
-              <motion.div
-                key={index}
-                className="group"
-                variants={itemVariants}
+            <motion.div className="text-center mb-20">
+              <motion.span 
+                className="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-green-500/10 to-emerald-500/10 
+                  text-green-400 text-sm font-medium mb-6 border border-green-500/10 backdrop-blur-sm"
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
               >
-                <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all 
-                  duration-300 h-full transform hover:-translate-y-1 border border-gray-100
-                  hover:border-green-100 hover:bg-green-50/50">
-                  <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                    {feature.icon}
+                Why Attend?
+              </motion.span>
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">
+                Key Features
+              </h2>
+              <div className="w-24 h-1 bg-gradient-to-r from-green-400 to-emerald-400 mx-auto rounded-full" />
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {keyFeatures.map((feature, index) => (
+                <motion.div
+                  key={index}
+                  className="group"
+                  variants={itemVariants}
+                >
+                  <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all 
+                    duration-300 h-full transform hover:-translate-y-1 border border-gray-100
+                    hover:border-green-100 hover:bg-green-50/50">
+                    <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                      {feature.icon}
+                    </div>
+                    <h3 className="text-xl font-semibold mb-4 text-gray-800 group-hover:text-green-700 
+                      transition-colors duration-300">{feature.title}</h3>
+                    <p className="text-gray-600 group-hover:text-gray-700 transition-colors duration-300">
+                      {feature.description}
+                    </p>
                   </div>
-                  <h3 className="text-xl font-semibold mb-4 text-gray-800 group-hover:text-green-700 
-                    transition-colors duration-300">{feature.title}</h3>
-                  <p className="text-gray-600 group-hover:text-gray-700 transition-colors duration-300">
-                    {feature.description}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
       </section>
 
       {/* Main Events */}
-      <section className="py-32 bg-gradient-to-b from-white to-gray-50 relative">
-        {/* Decorative background elements */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(34,197,94,0.1)_0%,rgba(255,255,255,0)_50%)]" />
-        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.015]" />
-        <div className="absolute -top-px left-0 right-0 h-px bg-gradient-to-r from-transparent via-green-500/20 to-transparent" />
-        
-        <motion.div 
-          className="container mx-auto px-4 relative"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-        >
-          <motion.div className="text-center mb-20" variants={itemVariants}>
+      <section className="py-24 bg-gradient-to-b from-gray-900 to-black relative overflow-hidden">
+        <div className="container mx-auto px-4">
+          <motion.div className="text-center mb-20">
             <motion.span 
               className="inline-block px-6 py-2 rounded-full bg-green-50 text-green-600 
                 text-lg font-medium mb-4 border border-green-100 shadow-sm shadow-green-100/50"
@@ -691,11 +683,11 @@ export default function Home() {
               </svg>
             </Link>
           </motion.div>
-        </motion.div>
+        </div>
       </section>
 
-      {/* Partners & Sponsors */}
-      <section className="py-24 bg-gray-50">
+      {/* Sponsors Section */}
+      <section className="py-24 bg-gradient-to-b from-black to-gray-900">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -738,123 +730,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Event Gallery */}
-      <section className="py-32 bg-gradient-to-b from-black to-gray-900 relative overflow-hidden">
-        {/* Background Effects */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(34,197,94,0.1)_0%,rgba(255,255,255,0)_70%)]" />
-        <div className="absolute inset-0 bg-[conic-gradient(from_0deg_at_50%_50%,rgba(0,0,0,0)_0deg,rgba(34,197,94,0.05)_180deg,rgba(0,0,0,0)_360deg)]" />
-        
-        <div className="container mx-auto px-4 relative">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="max-w-7xl mx-auto"
-          >
-            <motion.div className="text-center mb-20">
-              <motion.span 
-                className="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-green-500/10 to-emerald-500/10 
-                  text-green-400 text-sm font-medium mb-6 border border-green-500/10 backdrop-blur-sm"
-                whileHover={{ scale: 1.05 }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
-              >
-                Previous Events
-              </motion.span>
-              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">
-                Event Gallery
-              </h2>
-              <div className="w-24 h-1 bg-gradient-to-r from-green-400 to-emerald-400 mx-auto rounded-full" />
-            </motion.div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[
-                {
-                  title: "Tree Planting Initiative",
-                  description: "Community-led environmental conservation efforts",
-                  image: "/assets/images/tree-planting.jpg",
-                  date: "2024"
-                },
-                {
-                  title: "Climate Summit",
-                  description: "Regional leaders discussing climate action",
-                  image: "/assets/images/summit.jpg",
-                  date: "2024"
-                },
-                {
-                  title: "Innovation Showcase",
-                  description: "Green technology and sustainable solutions",
-                  image: "/assets/images/innovation.jpg",
-                  date: "2024"
-                },
-                {
-                  title: "Youth Forum",
-                  description: "Next generation of climate advocates",
-                  image: "/assets/images/youth.jpg",
-                  date: "2024"
-                },
-                {
-                  title: "Agricultural Exhibition",
-                  description: "Sustainable farming practices showcase",
-                  image: "/assets/images/agriculture.jpg",
-                  date: "2024"
-                },
-                {
-                  title: "Community Engagement",
-                  description: "Local participation in climate initiatives",
-                  image: "/assets/images/community.jpg",
-                  date: "2024"
-                }
-              ].map((item, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                  className="group relative"
-                >
-                  <div className="relative overflow-hidden rounded-2xl aspect-[4/3]">
-                    <div className="absolute -inset-2 bg-gradient-to-r from-green-500/50 to-emerald-500/50 
-                      opacity-0 group-hover:opacity-30 blur-2xl transition-all duration-500" />
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent 
-                      opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    <div className="absolute bottom-0 left-0 right-0 p-6 transform translate-y-6 
-                      group-hover:translate-y-0 transition-transform duration-500">
-                      <div className="text-white/90 text-sm font-medium mb-2">{item.date}</div>
-                      <h3 className="text-xl font-semibold text-white mb-2">{item.title}</h3>
-                      <p className="text-white/80 text-sm">{item.description}</p>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center mt-16"
-            >
-              <Link
-                to="/gallery"
-                className="inline-flex items-center gap-2 text-green-400 font-semibold hover:text-green-300
-                  transition-colors duration-300 group"
-              >
-                View Full Gallery
-                <span className="transform group-hover:translate-x-1 transition-transform duration-300">→</span>
-              </Link>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
       {/* Footer */}
-      <footer className="bg-gray-900 text-white/80">
+      <footer className="bg-gray-900 text-white py-20">
         {/* Main Footer */}
         <div className="container mx-auto px-4 py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
