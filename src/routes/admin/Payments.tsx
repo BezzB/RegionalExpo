@@ -167,15 +167,14 @@ export default function AdminPayments() {
     try {
       setUpdatingStatus(true)
       
-      const { error } = await supabase
-        .from('payments')
-        .update({ 
-          status: newStatus,
-          updated_at: new Date().toISOString()
+      const { data, error } = await supabase
+        .rpc('update_payment_status', {
+          payment_id: paymentId,
+          new_status: newStatus
         })
-        .eq('id', paymentId)
 
       if (error) throw error
+      if (!data.success) throw new Error(data.message)
 
       // Update local state
       setPayments(payments.map(payment => 
@@ -190,7 +189,7 @@ export default function AdminPayments() {
       setNewStatus('')
     } catch (err) {
       console.error('Error updating payment status:', err)
-      toast.error('Failed to update payment status')
+      toast.error(err instanceof Error ? err.message : 'Failed to update payment status')
     } finally {
       setUpdatingStatus(false)
     }
