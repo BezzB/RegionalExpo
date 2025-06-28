@@ -15,6 +15,7 @@ import {
 interface SponsorshipPackageProps {
   data: {
     package: string;
+    delegateCount: number;
   };
   updateData: (data: Partial<SponsorshipPackageProps['data']>) => void;
 }
@@ -26,6 +27,7 @@ const packages = [
     price: 'KES 10,000,000',
     icon: Crown,
     slots: 3,
+    delegateCount: 10,
     color: 'bg-gradient-to-r from-gray-100 to-gray-300',
     benefits: [
       'Premium exhibition space (6x6m)',
@@ -41,6 +43,7 @@ const packages = [
     price: 'KES 5,000,000',
     icon: Trophy,
     slots: 5,
+    delegateCount: 6,
     color: 'bg-gradient-to-r from-yellow-100 to-yellow-300',
     benefits: [
       'Large exhibition space (4x4m)',
@@ -56,6 +59,7 @@ const packages = [
     price: 'KES 2,500,000',
     icon: Medal,
     slots: 10,
+    delegateCount: 4,
     color: 'bg-gradient-to-r from-gray-100 to-gray-200',
     benefits: [
       'Standard exhibition space (3x3m)',
@@ -70,6 +74,7 @@ const packages = [
     price: 'KES 500,000',
     icon: Award,
     slots: 15,
+    delegateCount: 2,
     color: 'bg-gradient-to-r from-orange-100 to-orange-200',
     benefits: [
       'Small exhibition space (2x2m)',
@@ -84,6 +89,7 @@ const packages = [
     price: 'KES 1,000,000 + 30,000',
     icon: Star,
     slots: 2,
+    delegateCount: 8,
     color: 'bg-gradient-to-r from-purple-100 to-purple-200',
     benefits: [
       'Exclusive gala dinner branding',
@@ -98,6 +104,7 @@ const packages = [
     price: 'KES 100,000',
     icon: Tent,
     slots: null,
+    delegateCount: 1,
     color: 'bg-gradient-to-r from-blue-100 to-blue-200',
     benefits: [
       'Exhibition space (2x2m)',
@@ -111,6 +118,7 @@ const packages = [
     price: 'KES 30,000',
     icon: Sprout,
     slots: null,
+    delegateCount: 1,
     color: 'bg-gradient-to-r from-green-100 to-green-200',
     benefits: [
       'Small booth space',
@@ -124,8 +132,12 @@ export default function SponsorshipPackage({ data, updateData }: SponsorshipPack
   const [selectedPackage, setSelectedPackage] = useState(data.package);
 
   const handlePackageSelect = (packageId: string) => {
+    const selectedPkg = packages.find(pkg => pkg.id === packageId);
     setSelectedPackage(packageId);
-    updateData({ package: packageId });
+    updateData({ 
+      package: packageId,
+      delegateCount: selectedPkg?.delegateCount || 1 // Default to 1 if not found
+    });
   };
 
   return (

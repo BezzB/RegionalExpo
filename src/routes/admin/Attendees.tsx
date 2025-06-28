@@ -8,6 +8,8 @@ import {
 } from 'lucide-react'
 import { validateEmail, validatePhone } from '../../utils/validation'
 import { useDebounce } from '../../hooks/useDebounce'
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/select'
+import { Input } from '../../components/ui/input'
 
 interface Attendee {
   id: string

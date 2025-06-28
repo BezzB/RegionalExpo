@@ -54,6 +54,7 @@ export default function SponsorRegistration() {
     
     // Sponsorship Package
     package: '',
+    delegateCount: 0,
     
     // Branding Info
     fasciaName: '',
@@ -121,7 +122,14 @@ export default function SponsorRegistration() {
       return;
     }
 
-    const result = await submitRegistration(formData);
+    // Add missing required fields for RegistrationData type
+    const registrationData = {
+      ...formData,
+      delegateCount: 0, // Default value or get from form
+      delegateNames: [] // Default value or get from form
+    };
+
+    const result = await submitRegistration(registrationData);
 
     if (result.success) {
       toast({

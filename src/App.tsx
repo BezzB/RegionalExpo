@@ -29,10 +29,19 @@ import AdminSettings from './routes/admin/Settings'
 import AdminNotifications from './routes/admin/Notifications'
 import AdminSpeakers from './routes/admin/Speakers'
 import AdminProfile from './routes/admin/Profile'
+import AdminMarathon from './routes/admin/Marathon'
+
+// Enable React Router v7 features
+const routerOptions = {
+  future: {
+    v7_startTransition: true,
+    v7_relativeSplatPath: true
+  }
+};
 
 export default function App() {
   return (
-    <Router>
+    <Router {...routerOptions}>
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Layout />}>
@@ -63,6 +72,7 @@ export default function App() {
           <Route path="partners" element={<AdminPartners />} />
           <Route path="exhibitors" element={<AdminExhibitors />} />
           <Route path="attendees" element={<AdminAttendees />} />
+          <Route path="marathon" element={<AdminMarathon />} />
           <Route path="payments" element={<AdminPayments />} />
           <Route path="settings" element={<AdminSettings />} />
           <Route path="notifications" element={<AdminNotifications />} />
