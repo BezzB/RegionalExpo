@@ -34,160 +34,8 @@ import { PackageComparison } from '@/components/PackageComparison'
 import { ContactForm } from '@/components/ContactForm'
 import { WhatsAppButton } from '@/components/WhatsAppButton'
 import { PaymentForm } from '@/components/payment/PaymentForm'
+import { usePackages } from '@/hooks/usePackages'
 import { toast } from 'react-hot-toast'
-
-const packages = [
-  {
-    name: "Platinum Package",
-    price: 10000000,
-    currency: "KES",
-    description: "Premier sponsorship package with maximum visibility and exclusive benefits",
-    slots: 3,
-    benefits: [
-      "Cheque handover ceremony in presence of governor",
-      "Head of delegation to address conference with the Governor",
-      "Host a panel session as per conference program",
-      "Recognition as main sponsors",
-      "6 tear drop banners premier exhibition boots with red carpets at preferred locations",
-      "2 VVIP delegates, 5 VIP and 10 delegates with entry to all side events galar dinner and cocktail party",
-      "5 roll up burners at the main hole",
-      "Company logo on all multi media advertisements",
-      "2 pages of advertisements in the expo catalog",
-      "2 minutes sponsors advertisements to play during break",
-      "Logo on all printed materials and all events",
-      "Mentions in press releases and all social media",
-      "Receive post-registration list (Job title, Company name)",
-      "Full-page editorial space in the newspaper supplement following the conference"
-    ],
-    featured: true
-  },
-  {
-    name: "Gold Package",
-    price: 5000000,
-    currency: "KES",
-    description: "Premium visibility for industry leaders",
-    slots: 5,
-    benefits: [
-      "Host a panel session as per conference program",
-      "3 tear drop banners premier exhibition boots with red carpets at preferred locations",
-      "3 VIP and 10 delegates with entry to all side events galar dinner and cocktail party",
-      "2 roll up burners at the main hole",
-      "Company logo on all multi media advertisements",
-      "1 page of advertisements in the expo catalog",
-      "2 minutes sponsors advertisements to play during break",
-      "Logo on all printed materials and all events",
-      "Mentions in press releases and all social media",
-      "Receive post-registration list (Job title, Company name)",
-      "Complimentary exhibition space within a prime area of the event networking area",
-      "Acknowledge Sponsor as a sponsor for the event",
-      "Sponsor Logo included on the stage sets and all relevant event signage and conference holding slides"
-    ],
-    featured: false
-  },
-  {
-    name: "Silver Package",
-    price: 2500000,
-    currency: "KES",
-    description: "Enhanced visibility for growing organizations",
-    slots: 10,
-    benefits: [
-      "3 tear drop banners premier exhibition boots at preferred locations",
-      "1 VIP and 5 delegates with entry to all side events, galar dinner and cocktail party",
-      "1 roll up burners at the main halls",
-      "Company logo on all multi media advertisements",
-      "1/2 page of advertisements in the expo catalog",
-      "1 minute sponsors advertisements to play during break",
-      "Logo on all printed materials and all events",
-      "Mentions in press releases and all social media",
-      "Complimentary exhibition space within a prime area of the event networking area",
-      "Acknowledge Sponsor as a sponsor for the event",
-      "Sponsor Logo included on the stage sets and all relevant event signage and conference holding slides"
-    ],
-    featured: false
-  },
-  {
-    name: "Bronze Package",
-    price: 500000,
-    currency: "KES",
-    description: "Perfect entry point for small to medium organizations",
-    slots: 15,
-    benefits: [
-      "5 delegates with entry to all side events and cocktail party",
-      "Sponsor Logo added to all event sales collateral and marketing material",
-      "Sponsor logo included on any print ads for the event",
-      "Sponsor Logo included on the stage sets and all relevant event signage and conference holding slides",
-      "Acknowledgment sponsor in the conference report and a quarter page profile",
-      "Complimentary exhibition space within event networking area",
-      "1 minute sponsors advertisements to play during break"
-    ],
-    featured: false
-  },
-  {
-    name: "Exhibition Package",
-    price: 100000,
-    currency: "KES",
-    description: "Perfect for showcasing your products and services",
-    slots: null,
-    benefits: [
-      "Booth/Tent (3m by 3m) – includes 1 table, 2chairs and Power Extension (Decor)",
-      "Sponsor logo on the Event brochure",
-      "2 full conference passes included in the package",
-      "Sponsor to be allocated an exhibition space, within event networking area, including: structure, stool, name board, lighting"
-    ],
-    featured: false
-  },
-  {
-    name: "CBO Exhibition",
-    price: 30000,
-    currency: "KES",
-    description: "Community-Based Organizations Exhibition Package",
-    slots: null,
-    benefits: [
-      "(3m by 3m) Exhibition Space",
-      "Sponsor logo on the Event brochure"
-    ],
-    featured: false
-  },
-  {
-    name: "Special Sponsorship (Gala Dinner)",
-    price: 1000000,
-    currency: "KES",
-    description: "Premium Gala Dinner Sponsorship Package",
-    slots: 2,
-    benefits: [
-      "Sponsor Logo included on the stage sets and all relevant event signage and conference holding slides",
-      "2 VVIP delegates, 5 VIP and 10 delegates with entry to all side events gallar dinner and cocktail party",
-      "10 Minutes welcome remarks from the head of delegation",
-      "5 tear drop banners at Galla Dinner venue",
-      "2 Roll up banners at the main stage in the galla dinner",
-      "Acknowledge Sponsor as a Sponsor for the Event",
-      "Sponsor Logo on all multi media advertisements",
-      "Sponsor Logo included on the stage sets and all relevant event signage and conference holding slides",
-      "Branding of the Dinner area in the duration of the event",
-      "Complimentary exhibition space within event networking area",
-      "Head of delegation to lead award giving ceremony"
-    ],
-    featured: false,
-    reservationFee: 30000
-  },
-  {
-    name: "Special Sponsorship (Gala Dinner)",
-    price: 300000,
-    currency: "KES",
-    description: "Standard Gala Dinner Sponsorship Package",
-    slots: 5,
-    benefits: [
-      "Sponsor Logo included on the stage sets and all relevant event signage and conference holding slides",
-      "1 VIP and 2 delegates with entry to all side events gallar dinner",
-      "1 Roll up banners at the main stage in the galla dinner",
-      "Acknowledge Sponsor as a Sponsor for the Event",
-      "Sponsor Logo on all multi media advertisements",
-      "Sponsor Logo included on the stage sets and all relevant event signage and conference holding slides"
-    ],
-    featured: false,
-    reservationFee: 30000
-  }
-]
 
 const getPackageStyles = (pkgName: string) => {
   switch (pkgName) {
@@ -268,7 +116,29 @@ const getPackageStyles = (pkgName: string) => {
 };
 
 export default function Sponsorship() {
+  const { packages, loading, error } = usePackages()
   const [selectedPackage, setSelectedPackage] = useState<typeof packages[0] | null>(null)
+  const [showPaymentForm, setShowPaymentForm] = useState(false)
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Error Loading Packages</h2>
+          <p className="text-gray-600">{error}</p>
+        </div>
+      </div>
+    )
+  }
 
   const handlePackageSelect = (pkg: typeof packages[0]) => {
     setSelectedPackage(pkg)

@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion'
 import { ContactForm } from '../components/ContactForm'
-import { Button } from '../components/ui/button'
-import { MapPin, Phone, Mail, Clock, Globe } from 'lucide-react'
+import { Phone, Mail, Clock, Globe } from 'lucide-react'
 
 export default function Contact() {
   return (

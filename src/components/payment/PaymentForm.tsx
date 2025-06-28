@@ -133,6 +133,16 @@ export function PaymentForm({ selectedPackage, onClose, onSuccess }: PaymentForm
       // For demo purposes, we'll simulate a successful payment
       setTimeout(() => {
         setPaymentStatus('success')
+        toast.success('Payment initiated successfully! 🎉', {
+          duration: 5000,
+          position: 'top-center',
+          icon: '✅',
+        })
+        toast.success(`We'll send payment instructions to ${formData.email}`, {
+          duration: 5000,
+          position: 'top-center',
+          icon: '📧',
+        })
         onSuccess()
       }, 2000)
 
@@ -165,10 +175,21 @@ export function PaymentForm({ selectedPackage, onClose, onSuccess }: PaymentForm
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
               Payment Initiated Successfully!
             </h3>
-            <p className="text-gray-600 mb-6">
-              We've received your sponsorship request. Our team will contact you shortly with next steps.
+            <p className="text-gray-600 mb-4">
+              Thank you for your sponsorship! We've received your request and payment instructions have been sent to your email.
             </p>
-            <Button onClick={onClose}>Close</Button>
+            <p className="text-gray-600 mb-6">
+              Our team will contact you shortly to coordinate the next steps.
+            </p>
+            <div className="flex justify-center gap-4">
+              <Button onClick={onClose} variant="outline">Close</Button>
+              <Button 
+                onClick={() => window.location.href = '/dashboard'} 
+                className="bg-green-600 text-white hover:bg-green-700"
+              >
+                View Dashboard
+              </Button>
+            </div>
           </motion.div>
         ) : paymentStatus === 'error' ? (
           <motion.div
