@@ -9,7 +9,8 @@ import {
   UserCheck,
   Settings as SettingsIcon,
   Bell,
-  LogOut
+  LogOut,
+  CreditCard
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import supabase from '@/lib/supabase'
@@ -23,6 +24,7 @@ const menuItems = [
   { path: '/admin/partners', label: 'Partners', icon: Building2 },
   { path: '/admin/exhibitors', label: 'Exhibitors', icon: Building2 },
   { path: '/admin/attendees', label: 'Attendees', icon: UserCheck },
+  { path: '/admin/payments', label: 'Payments', icon: CreditCard },
   { path: '/admin/settings', label: 'Settings', icon: SettingsIcon },
   { path: '/admin/notifications', label: 'Notifications', icon: Bell }
 ]

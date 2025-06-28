@@ -29,6 +29,7 @@ const AdminSponsors = lazy(() => import('./routes/admin/Sponsors'))
 const AdminPartners = lazy(() => import('./routes/admin/Partners'))
 const AdminExhibitors = lazy(() => import('./routes/admin/Exhibitors'))
 const AdminAttendees = lazy(() => import('./routes/admin/Attendees'))
+const AdminPayments = lazy(() => import('./routes/admin/Payments'))
 const AdminSettings = lazy(() => import('./routes/admin/Settings'))
 const AdminNotifications = lazy(() => import('./routes/admin/Notifications'))
 
@@ -137,6 +138,10 @@ const router = createBrowserRouter([
       {
         path: "attendees",
         element: <AdminAttendees />
+      },
+      {
+        path: "payments",
+        element: <AdminPayments />
       },
       {
         path: "settings",

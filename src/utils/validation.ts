@@ -4,9 +4,26 @@ export const validateEmail = (email: string): boolean => {
 }
 
 export const validatePhone = (phone: string): boolean => {
-  // Basic phone validation - allows various formats
-  const phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/
-  return phoneRegex.test(phone)
+  // Accepts formats: +254XXXXXXXXX, 254XXXXXXXXX, 0XXXXXXXXX
+  const phoneRegex = /^(?:\+254|254|0)[17]\d{8}$/
+  return phoneRegex.test(phone.replace(/\s/g, ''))
+}
+
+export const formatPhoneNumber = (phone: string): string => {
+  // Remove all non-digit characters
+  const cleaned = phone.replace(/\D/g, '')
+  
+  // If it starts with 0, replace with 254
+  if (cleaned.startsWith('0')) {
+    return '254' + cleaned.slice(1)
+  }
+  
+  // If it doesn't start with 254, add it
+  if (!cleaned.startsWith('254')) {
+    return '254' + cleaned
+  }
+  
+  return cleaned
 }
 
 export const validateUrl = (url: string): boolean => {

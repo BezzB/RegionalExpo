@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -32,11 +33,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PackageComparison } from '@/components/PackageComparison'
 import { ContactForm } from '@/components/ContactForm'
 import { WhatsAppButton } from '@/components/WhatsAppButton'
+import { PaymentForm } from '@/components/payment/PaymentForm'
+import { toast } from 'react-hot-toast'
 
 const packages = [
   {
     name: "Platinum Package",
-    price: "10,000,000",
+    price: 10000000,
     currency: "KES",
     description: "Premier sponsorship package with maximum visibility and exclusive benefits",
     slots: 3,
@@ -60,7 +63,7 @@ const packages = [
   },
   {
     name: "Gold Package",
-    price: "5,000,000",
+    price: 5000000,
     currency: "KES",
     description: "Premium visibility for industry leaders",
     slots: 5,
@@ -83,7 +86,7 @@ const packages = [
   },
   {
     name: "Silver Package",
-    price: "2,500,000",
+    price: 2500000,
     currency: "KES",
     description: "Enhanced visibility for growing organizations",
     slots: 10,
@@ -104,7 +107,7 @@ const packages = [
   },
   {
     name: "Bronze Package",
-    price: "500,000",
+    price: 500000,
     currency: "KES",
     description: "Perfect entry point for small to medium organizations",
     slots: 15,
@@ -121,7 +124,7 @@ const packages = [
   },
   {
     name: "Exhibition Package",
-    price: "100,000",
+    price: 100000,
     currency: "KES",
     description: "Perfect for showcasing your products and services",
     slots: null,
@@ -135,7 +138,7 @@ const packages = [
   },
   {
     name: "CBO Exhibition",
-    price: "30,000",
+    price: 30000,
     currency: "KES",
     description: "Community-Based Organizations Exhibition Package",
     slots: null,
@@ -147,7 +150,7 @@ const packages = [
   },
   {
     name: "Special Sponsorship (Gala Dinner)",
-    price: "1,000,000",
+    price: 1000000,
     currency: "KES",
     description: "Premium Gala Dinner Sponsorship Package",
     slots: 2,
@@ -169,7 +172,7 @@ const packages = [
   },
   {
     name: "Special Sponsorship (Gala Dinner)",
-    price: "300,000",
+    price: 300000,
     currency: "KES",
     description: "Standard Gala Dinner Sponsorship Package",
     slots: 5,
@@ -265,40 +268,22 @@ const getPackageStyles = (pkgName: string) => {
 };
 
 export default function Sponsorship() {
+  const [selectedPackage, setSelectedPackage] = useState<typeof packages[0] | null>(null)
+
+  const handlePackageSelect = (pkg: typeof packages[0]) => {
+    setSelectedPackage(pkg)
+  }
+
+  const handlePaymentSuccess = () => {
+    toast.success('Thank you for your sponsorship! Our team will contact you shortly.')
+    setSelectedPackage(null)
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative min-h-[70vh] flex items-center bg-gradient-to-br from-emerald-900 via-green-800 to-emerald-900 overflow-hidden -mt-24 pt-16">
-        {/* Decorative elements */}
-        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.015]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1)_0%,rgba(255,255,255,0)_70%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(0,0,0,0.1)_0%,rgba(0,0,0,0)_100%)]" />
-        
-        {/* Floating elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          {[...Array(6)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-64 h-64 rounded-full bg-white/5 backdrop-blur-sm"
-              initial={{ 
-                x: Math.random() * 100 - 50 + '%',
-                y: Math.random() * 100 - 50 + '%',
-                scale: 0.5 + Math.random() * 0.5
-              }}
-              animate={{
-                x: [null, Math.random() * 100 - 50 + '%'],
-                y: [null, Math.random() * 100 - 50 + '%'],
-              }}
-              transition={{
-                duration: 20 + Math.random() * 10,
-                repeat: Infinity,
-                repeatType: "reverse",
-                ease: "easeInOut"
-              }}
-            />
-          ))}
-        </div>
-        
+      <section className="relative bg-gradient-to-br from-green-900 to-green-700 py-20">
+        <div className="absolute inset-0 bg-black/30"></div>
         <div className="container mx-auto px-4 relative z-10">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -367,8 +352,7 @@ export default function Sponsorship() {
             </motion.div>
           </motion.div>
         </div>
-        {/* Move the SVG wave here, after the hero content, and add top margin */}
-        <div className="w-full absolute left-0 right-0" style={{ bottom: '-30px' }}>
+        <div className="absolute bottom-0 left-0 right-0">
           <svg
             className="w-full h-auto"
             viewBox="0 0 1440 120"
@@ -442,7 +426,7 @@ export default function Sponsorship() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {packages.map((pkg, index) => {
-              const styles = getPackageStyles(pkg.name);
+              const styles = getPackageStyles(pkg.name)
               return (
                 <motion.div
                   key={index}
@@ -452,17 +436,25 @@ export default function Sponsorship() {
                   viewport={{ once: true }}
                   className="relative group"
                 >
-                  <Card className={`h-full overflow-hidden border-2 ${styles.border} ${styles.bg} 
-                    hover:shadow-xl transition-all duration-300 transform group-hover:-translate-y-1`}>
+                  <Card className={`relative overflow-hidden ${styles.border} ${styles.bg} h-full shadow-lg 
+                    hover:shadow-xl transition-all duration-300 transform group-hover:-translate-y-1
+                    ${pkg.featured ? 'ring-2 ring-amber-500 ring-offset-2' : ''}`}>
+                    {pkg.featured && (
+                      <div className="absolute top-0 right-0 w-20 h-20">
+                        <div className="absolute transform rotate-45 bg-gradient-to-r from-amber-500 to-amber-600 text-white py-1 right-[-40px] top-[32px] w-[170px] text-center text-sm font-medium">
+                          Featured
+                        </div>
+                      </div>
+                    )}
                     <div className="p-6">
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2">
                           {styles.icon}
                           <h3 className="text-xl font-bold text-gray-900">{pkg.name}</h3>
                         </div>
-                        {pkg.featured && (
-                          <Badge className="bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg">
-                            Featured
+                        {pkg.slots !== null && pkg.slots > 0 && (
+                          <Badge className={`${styles.text} ${styles.bg} border ${styles.border}`}>
+                            {pkg.slots} slots left
                           </Badge>
                         )}
                       </div>
@@ -470,6 +462,11 @@ export default function Sponsorship() {
                       <div className="mb-6">
                         <div className="text-3xl font-bold mb-2 text-gray-900">
                           {pkg.currency} {pkg.price}
+                          {pkg.reservationFee && (
+                            <span className="text-sm font-normal text-gray-600 block">
+                              + {pkg.currency} {pkg.reservationFee} reservation fee
+                            </span>
+                          )}
                         </div>
                         <p className="text-gray-600 leading-relaxed">{pkg.description}</p>
                       </div>
@@ -477,26 +474,48 @@ export default function Sponsorship() {
                       <div className="space-y-4 mb-6">
                         {pkg.benefits.map((benefit, idx) => (
                           <div key={idx} className="flex items-start gap-3">
-                            <Check className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-1" />
+                            <Check className={`w-5 h-5 ${styles.text} flex-shrink-0 mt-1`} />
                             <span className="text-gray-700 leading-relaxed">{benefit}</span>
                           </div>
                         ))}
                       </div>
 
-                      <div className="space-y-3">
+                      <div className="space-y-3 mt-auto">
                         <Button 
                           className={`w-full bg-gradient-to-r ${styles.gradient} text-white hover:opacity-90 
-                            transition-all duration-300 shadow-lg hover:shadow-xl font-semibold`}
-                          onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+                            transition-all duration-300 shadow-lg hover:shadow-xl font-semibold
+                            ${pkg.slots === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          onClick={() => pkg.slots !== 0 && handlePackageSelect(pkg)}
+                          disabled={pkg.slots === 0}
                         >
-                          Get Started
+                          {pkg.slots !== null && pkg.slots > 0 ? (
+                            <>
+                              Select Package
+                              <span className="ml-2 text-sm opacity-90">
+                                ({pkg.slots} slots left)
+                              </span>
+                            </>
+                          ) : pkg.slots === 0 ? (
+                            'Fully Booked'
+                          ) : (
+                            'Select Package'
+                          )}
                         </Button>
-                        <WhatsAppButton packageName={pkg.name} price={pkg.price} />
+                        <div className="flex items-center justify-center gap-2">
+                          <WhatsAppButton packageName={pkg.name} price={pkg.price} />
+                          <Button
+                            variant="outline"
+                            className="flex-1"
+                            onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+                          >
+                            Contact Us
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </Card>
                 </motion.div>
-              );
+              )
             })}
           </div>
         </div>
@@ -516,6 +535,13 @@ export default function Sponsorship() {
           </div>
         </div>
       </section>
+
+      {/* Payment Form Dialog */}
+      <PaymentForm
+        selectedPackage={selectedPackage}
+        onClose={() => setSelectedPackage(null)}
+        onSuccess={handlePaymentSuccess}
+      />
     </div>
-  );
+  )
 }
